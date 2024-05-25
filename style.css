@@ -1,0 +1,319 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: white;
+}
+
+.page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container-a4 {
+    width: 297mm;
+    height: 210mm;
+    display: flex;
+    border: 1px solid black;
+    box-sizing: border-box;
+}
+
+.container-a5 {
+    width: 50%;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+.container-a5.left {
+    font-size: 12px;
+    font-weight: normal;
+
+    border-right: 1px solid black;
+    padding: 12mm 15mm 0 20mm;
+}
+
+.container-a5.right {
+    padding: 12mm 20mm 0 15mm;
+}
+
+.container-a5.title {
+    padding: 25mm 20mm 0 15mm;
+}
+
+.container-a5.rule {
+    padding: 12mm 12mm 0 20mm;
+}
+
+.form-title { 
+    text-align: center;
+    font-weight: bold;
+    font-size: 14px;
+
+    margin-bottom: 7mm;
+}
+
+.form-title.main {
+    margin-bottom: 40mm;
+}
+
+.form-title-list {
+    text-align: center;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.form-group-1 {
+    margin-bottom: 14px;
+}
+
+.form-group {
+    display: flex;
+    margin-bottom: 3mm;
+    align-items: baseline;
+}
+
+.form-group-list {
+    display: flex;
+    align-items: baseline;
+}
+
+.form-group.list {
+    margin-bottom: 0;
+}
+
+.form-hint {
+    text-align: center;
+    font-size: 9px;
+
+    padding: 0;
+    margin-top: -12px;
+    margin-bottom: 4px;
+}
+
+.form-hints.type-1 {
+    display: flex;
+    justify-content: space-between;
+}
+
+.form-subtitle {
+    text-align: center;
+    display: block;
+    font-weight: bold;
+
+    margin-bottom: 1mm;
+}
+
+.form-label {
+    display: block;
+    font-size: 14px;
+}
+
+.form-label.type-1 {
+    font-size: 12px;
+}
+
+.form-labels.type-1 {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+.form-value {
+    flex-grow: 1;
+    display: block;
+    border-bottom: 0.5px solid black;
+    position: relative;
+}
+
+.form-value.type-1 {
+    flex-grow: 0;
+    width: 15%;
+}
+
+.form-value.type-2 {
+    flex-grow: 0;
+    width: 30%;
+}
+
+.form-value.type-3 {
+    flex-grow: 0;
+    width: 60%;
+}
+
+.form-value.type-autograph {
+    flex-grow: 0;
+    width: 25%;
+
+    margin-right: 5mm;
+}
+
+.form-value.type-year {
+    flex-grow: 0;
+    width: 5%;
+}
+
+.form-value input {
+    width: 100%;
+    border: none;
+    padding: 0;
+    margin: 0;
+
+    text-align: center;
+    font-size: 14px;
+}
+
+.form-value.list input {
+    width: 100%;
+    border: none;
+    padding: 0;
+    margin: 0;
+
+    text-align: left;
+    font-size: 14px;
+}
+
+input:disabled {
+    background-color: white;
+}
+
+/*-------------------------------*/
+
+.met-title {
+    text-align: center;
+    font-size: 12px;
+    font-weight: bold;
+
+    margin-bottom: 4mm;
+}
+
+.met-title.two {
+    margin-top: 4mm;
+}
+
+ul {
+    margin: 0;
+}
+
+ul > li:before {
+    content: "- ";
+    margin-left: 4mm;
+}
+
+li {
+    display: table;
+}
+
+.par {
+    line-height: calc(1em + 1mm); 
+    text-align: justify;
+    text-justify: inter-word;
+}
+
+.indent {
+    margin-left: 7mm;
+}
+
+/*-------------------------------*/
+
+#download-pdf {
+    background-color: white;
+    color: black;
+    border: 2px solid #af745a;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 10px;
+    transition-duration: 0.4s;
+}
+
+#download-pdf:hover {
+    background-color: #af745a;
+    color: white;
+
+    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+}
+
+#download-pdf:active {
+    background-color: #a75d3e;
+    transform: translateY(6px);
+}
+
+.buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/*-------------------------------*/
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+
+    height: 564px;
+    overflow: hidden;
+}
+
+th, td {
+    border: 1px solid black;
+    padding: 0;
+    text-align: center;
+}
+
+td textarea {
+    width: 100%;
+    height: 100%;
+    border: none;
+    resize: none; /* Allow only vertical resizing */
+    overflow: hidden;
+    box-sizing: border-box;
+
+    font-size: 12px;
+    padding: 0.5mm;
+}
+
+.weeks {
+    display: flex;
+    justify-content: center;
+}
+
+.week {
+    width: 20px;
+    height: 20px;
+    border: 1px solid black;
+    margin: 0;
+    cursor: pointer;
+    position: relative;
+}
+
+.week.crossed::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background: black;
+    top: 50%;
+    left: 0;
+    transform: rotate(45deg);
+}
+
+.week.crossed::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background: black;
+    top: 50%;
+    left: 0;
+    transform: rotate(-45deg);
+}
