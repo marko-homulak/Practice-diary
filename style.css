@@ -255,65 +255,134 @@ li {
 
 /*-------------------------------*/
 
-table {
+table#practice-table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 20px;
+    table-layout: fixed;
 
-    height: 564px;
-    overflow: hidden;
+    margin-bottom: 4mm;
 }
 
-th, td {
-    border: 1px solid black;
+#practice-table th,
+#practice-table td {
+    border: 0.5px solid black;
     padding: 0;
+
+    font-size: 11px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+#practice-table thead th {
+    font-weight: bold;
+    font-size: 11px;
+    line-height: 1.1;
+    padding: 1mm 0.5mm;
+}
+
+#practice-table thead th.vertical-header {
+    padding: 0;
+    position: relative;
+}
+
+#practice-table thead th.vertical-header span {
+    position: absolute;
+    top: 50%;
+    left: 56%;
+    white-space: nowrap;
+    transform: translate(-50%, -50%) rotate(-90deg);
+}
+
+#practice-table col.col-no   { width: 5mm; }
+#practice-table col.col-task { width: auto; }
+#practice-table col.col-week { width: 4.5mm; }
+#practice-table col.col-note { width: 20mm; }
+
+#practice-table tbody tr {
+    height: 6.4mm;
+}
+
+#practice-table tbody input {
+    width: 100%;
+    height: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    padding: 0 0.8mm;
+    margin: 0;
+    box-sizing: border-box;
+
+    font-family: inherit;
+    font-size: 11px;
+}
+
+#practice-table tbody .col-no input,
+#practice-table tbody .col-note input {
     text-align: center;
 }
 
+#practice-table tbody .col-task input {
+    text-align: left;
+}
+
+/* Клітинка тижня: клік ставить «×» */
+#practice-table td.col-week {
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+#practice-table td.col-week:hover {
+    background-color: #f2f2f2;
+}
+
+#practice-table td.col-week.crossed::before {
+    content: "\00d7";
+
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 4mm;
+    font-weight: bold;
+    line-height: 1;
+}
+
+/* Старі textarea (якщо десь лишились) */
 td textarea {
     width: 100%;
     height: 100%;
     border: none;
-    resize: none; /* Allow only vertical resizing */
+    resize: none;
     overflow: hidden;
     box-sizing: border-box;
 
+    font-family: inherit;
     font-size: 12px;
     padding: 0.5mm;
 }
 
-.weeks {
-    display: flex;
-    justify-content: center;
+/*-------------------------------*/
+
+input {
+    font-family: inherit;
+    color: inherit;
+    background: transparent;
+    outline: none;
 }
 
-.week {
-    width: 20px;
-    height: 20px;
-    border: 1px solid black;
-    margin: 0;
-    cursor: pointer;
-    position: relative;
+input:focus {
+    background-color: #fdf6ef;
 }
 
-.week.crossed::after {
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 2px;
-    background: black;
-    top: 50%;
-    left: 0;
-    transform: rotate(45deg);
+/* Під час експорту в PDF: без підказок і без підсвітки */
+body.exporting ::placeholder {
+    color: transparent !important;
+    opacity: 0 !important;
 }
 
-.week.crossed::before {
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 2px;
-    background: black;
-    top: 50%;
-    left: 0;
-    transform: rotate(-45deg);
+body.exporting input:focus {
+    background-color: transparent;
 }

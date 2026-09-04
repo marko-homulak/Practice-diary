@@ -1,70 +1,144 @@
-document.getElementById('download-pdf').addEventListener('click', function () {
-    const containers = document.querySelectorAll('.container-a4');
-    const opt = {
-      scale: 4,
-      useCORS: true
-    };
-    
-    const pdf = new jspdf.jsPDF('landscape', 'mm', 'a4');
+/* ============================================================
+   Щоденник практики — інтерактив + експорт у PDF
+   ============================================================ */
 
-    function addContainerToPDF(container, index) {
-      return html2canvas(container, opt).then(canvas => {
-        const imgData = canvas.toDataURL('image/jpeg', 1.0);
-        if (index > 0) {
-          pdf.addPage();
-        }
-        pdf.addImage(imgData, 'JPEG', 0, 0, pdf.internal.pageSize.width, pdf.internal.pageSize.height);
+/* ---------- 1. Календарний графік проходження практики ---------- */
+
+const WEEKS_COUNT = 5;   // кількість тижнів практики
+const TABLE_ROWS = 22;   // кількість рядків таблиці
+
+
+function buildPracticeTable() {
+  const table = document.getElementById('practice-table');
+  if (!table) return;
+
+  const weekHeaders = Array.from({ length: WEEKS_COUNT }, (_, i) => `<th>${i + 1}</th>`).join('');
+
+  let body = '';
+  for (let r = 0; r < TABLE_ROWS; r++) {
+    let cells = `<td class="col-no"><input type="text" placeholder=""></td>`;
+    cells += `<td class="col-task"><input type="text" placeholder=""></td>`;
+    for (let w = 1; w <= WEEKS_COUNT; w++) {
+      cells += `<td class="col-week" role="button" tabindex="0" aria-label="Тиждень ${w}"></td>`;
+    }
+    cells += `<td class="col-note"><input type="text" placeholder=""></td>`;
+    body += `<tr>${cells}</tr>`;
+  }
+
+  const cols = `<colgroup>
+      <col class="col-no">
+      <col class="col-task">
+      ${Array.from({ length: WEEKS_COUNT }, () => '<col class="col-week">').join('')}
+      <col class="col-note">
+    </colgroup>`;
+
+  table.innerHTML = `
+    ${cols}
+    <thead>
+      <tr>
+        <th rowspan="2" class="col-no vertical-header"><span>№ з/п</span></th>
+        <th rowspan="2" class="col-task">Назва робіт</th>
+        <th colspan="${WEEKS_COUNT}">Тижні проходження практики</th>
+        <th rowspan="2" class="col-note">Примітки про виконання</th>
+      </tr>
+      <tr>
+        ${weekHeaders}
+      </tr>
+    </thead>
+    <tbody>${body}</tbody>`;
+
+  // Клік по клітинці тижня — ставить / знімає «×»
+  table.querySelectorAll('td.col-week').forEach((cell) => {
+    const toggle = () => {
+      cell.classList.toggle('crossed');
+    };
+    cell.addEventListener('click', toggle);
+    cell.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggle();
+      }
+    });
+  });
+}
+
+/* ---------- 2. Автовисота для textarea (там, де вони лишились) ---------- */
+
+function adjustTextareaHeight(textarea) {
+  textarea.style.height = 'auto';
+  textarea.style.height = textarea.scrollHeight + 'px';
+}
+
+/* ---------- 3. Експорт у PDF ---------- */
+
+async function downloadPdf() {
+  const button = document.getElementById('download-pdf');
+  const containers = document.querySelectorAll('.container-a4');
+  if (!containers.length) return;
+
+  const jsPDFCtor = window.jspdf && window.jspdf.jsPDF;
+  if (!jsPDFCtor || typeof window.html2canvas !== 'function') {
+    alert('Не вдалося завантажити бібліотеки для створення PDF. Перевірте інтернет-зʼєднання.');
+    return;
+  }
+
+  button.disabled = true;
+  const originalLabel = button.textContent;
+  button.textContent = 'Формування PDF…';
+
+  // Ховаємо підказки (placeholder) та підсвітку полів на час рендеру.
+  // html2canvas малює placeholder попри CSS, тому прибираємо атрибут.
+  document.body.classList.add('exporting');
+  const hidden = [];
+  document.querySelectorAll('[placeholder]').forEach((el) => {
+    if (!el.placeholder) return;
+    hidden.push([el, el.placeholder]);
+    el.placeholder = '';
+  });
+
+  try {
+    const pdf = new jsPDFCtor('landscape', 'mm', 'a4');
+
+    // ВАЖЛИВО: послідовно, інакше порядок сторінок може «поїхати»
+    for (let i = 0; i < containers.length; i++) {
+      const canvas = await window.html2canvas(containers[i], {
+        scale: 3,
+        useCORS: true,
+        backgroundColor: '#ffffff',
       });
+      if (i > 0) pdf.addPage();
+      pdf.addImage(
+        canvas.toDataURL('image/jpeg', 0.98),
+        'JPEG',
+        0,
+        0,
+        pdf.internal.pageSize.getWidth(),
+        pdf.internal.pageSize.getHeight(),
+      );
     }
 
-    const promises = Array.from(containers).map((container, index) => addContainerToPDF(container, index));
+    pdf.save('shchodennyk-praktyky.pdf');
+  } catch (error) {
+    console.error('Помилка при створенні PDF:', error);
+    alert('Помилка при створенні PDF. Деталі — у консолі браузера.');
+  } finally {
+    hidden.forEach(([el, value]) => { el.placeholder = value; });
+    document.body.classList.remove('exporting');
+    button.disabled = false;
+    button.textContent = originalLabel;
+  }
+}
 
-    Promise.all(promises).then(() => {
-      pdf.save('document.pdf');
-    }).catch(error => {
-      console.error('Помилка при створенні PDF:', error);
-    });
-});
+/* ---------- 4. Ініціалізація ---------- */
 
 document.addEventListener('DOMContentLoaded', () => {
-    const weeks = document.querySelectorAll('.week');
-    const textareas = document.querySelectorAll('textarea');
+  buildPracticeTable();
 
-    // Function to adjust textarea height
-    function adjustTextareaHeight(textarea) {
-        textarea.style.height = 'auto';
-        textarea.style.height = textarea.scrollHeight + 'px';
-    }
+  document.querySelectorAll('textarea').forEach((textarea) => {
+    textarea.addEventListener('input', () => adjustTextareaHeight(textarea));
+    adjustTextareaHeight(textarea);
+  });
 
-    // Add event listeners to toggle cross on week divs
-    weeks.forEach(week => {
-        week.addEventListener('click', () => {
-            week.classList.toggle('crossed');
-        });
-    });
-
-    // Add input event listener to textareas for dynamic height adjustment
-    textareas.forEach(textarea => {
-        textarea.addEventListener('input', () => adjustTextareaHeight(textarea));
-        // Adjust height initially
-        adjustTextareaHeight(textarea);
-    });
+  const button = document.getElementById('download-pdf');
+  if (button) button.addEventListener('click', downloadPdf);
 });
-
-/*document.getElementById('download-pdf').addEventListener('click', function () {
-    const containers = document.querySelectorAll('.container-a4');
-    const opt = {
-        margin: [0, 0, 0, 0],
-        image: { type: 'jpeg', quality: 1.0 },
-        html2canvas: { scale: 4, useCORS: true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
-    };
-
-    containers.forEach((container, index) => {
-        const pdf = new jspdf.jsPDF(opt.jsPDF);
-
-        html2pdf().from(container).set(opt).toPdf().get('pdf').then((pdfObj) => {
-            pdfObj.save(`document_${index + 1}.pdf`);
-        });
-    });
-});*/
