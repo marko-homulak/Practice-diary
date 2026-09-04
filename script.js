@@ -86,26 +86,70 @@ async function downloadPdf() {
   const originalLabel = button.textContent;
   button.textContent = 'Формування PDF…';
 
-  // Ховаємо підказки (placeholder) та підсвітку полів на час рендеру.
-  // html2canvas малює placeholder попри CSS, тому прибираємо атрибут.
   document.body.classList.add('exporting');
-  const hidden = [];
-  document.querySelectorAll('[placeholder]').forEach((el) => {
-    if (!el.placeholder) return;
-    hidden.push([el, el.placeholder]);
-    el.placeholder = '';
-  });
 
   try {
     const pdf = new jsPDFCtor('landscape', 'mm', 'a4');
 
-    // ВАЖЛИВО: послідовно, інакше порядок сторінок може «поїхати»
     for (let i = 0; i < containers.length; i++) {
       const canvas = await window.html2canvas(containers[i], {
         scale: 3,
         useCORS: true,
         backgroundColor: '#ffffff',
+        // onclone працює з віртуальною копією сторінки перед створенням PDF:
+        onclone: (clonedDoc) => {
+          const inputs = clonedDoc.querySelectorAll('input');
+          inputs.forEach((input) => {
+            const val = input.value || '';
+            const textDiv = clonedDoc.createElement('div');
+            textDiv.textContent = val;
+
+            // Загальні стилі для копії
+            textDiv.className = input.className;
+            textDiv.style.width = '100%';
+            textDiv.style.boxSizing = 'border-box';
+            textDiv.style.fontFamily = '"Times New Roman", Times, serif';
+            textDiv.style.color = '#000000';
+            textDiv.style.whiteSpace = 'nowrap';
+            textDiv.style.overflow = 'hidden';
+
+            if (input.closest('#practice-table')) {
+              // Для таблиці: центрування з безпечним запасом для хвостиків літер
+              textDiv.style.height = '100%';
+              textDiv.style.display = 'flex';
+              textDiv.style.alignItems = 'center';
+              textDiv.style.fontSize = '10px';
+              textDiv.style.lineHeight = '1.2';
+              
+              // 1. ВИМИКАЄМО обрізання, щоб хвостики літер не зрізались
+              textDiv.style.overflow = 'visible'; 
+              
+              // 2. Трохи піднімаємо текст над нижньою рамкою комірки (1.5-2px)
+              textDiv.style.paddingBottom = '2px';
+
+              if (input.parentElement.classList.contains('col-task')) {
+                textDiv.style.justifyContent = 'flex-start';
+                textDiv.style.paddingLeft = '1.2mm';
+                textDiv.style.textAlign = 'left';
+              } else {
+                textDiv.style.justifyContent = 'center';
+                textDiv.style.textAlign = 'center';
+              }
+            } else {
+              // Для рядків та форми: підйом базової лінії над лінією підкреслення
+              const isList = input.closest('.list');
+              textDiv.style.fontSize = isList ? '11.5px' : '13px';
+              textDiv.style.lineHeight = '1.1';
+              textDiv.style.textAlign = isList ? 'left' : (input.style.textAlign || 'center');
+              textDiv.style.paddingBottom = '1.5px';
+              if (isList) textDiv.style.paddingLeft = '0.5mm';
+            }
+
+            input.parentNode.replaceChild(textDiv, input);
+          });
+        }
       });
+
       if (i > 0) pdf.addPage();
       pdf.addImage(
         canvas.toDataURL('image/jpeg', 0.98),
@@ -122,7 +166,6 @@ async function downloadPdf() {
     console.error('Помилка при створенні PDF:', error);
     alert('Помилка при створенні PDF. Деталі — у консолі браузера.');
   } finally {
-    hidden.forEach(([el, value]) => { el.placeholder = value; });
     document.body.classList.remove('exporting');
     button.disabled = false;
     button.textContent = originalLabel;

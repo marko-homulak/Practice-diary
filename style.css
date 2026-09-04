@@ -84,6 +84,7 @@ body {
 
 .form-group.list {
     margin-bottom: 0;
+    height: 5.1mm;
 }
 
 .form-hint {
@@ -125,9 +126,12 @@ body {
 
 .form-value {
     flex-grow: 1;
-    display: block;
-    border-bottom: 0.5px solid black;
+    display: flex;
+    align-items: flex-end;
+    border-bottom: 0.8px solid black;
     position: relative;
+    padding-bottom: 1.5px;
+    box-sizing: border-box;
 }
 
 .form-value.type-1 {
@@ -162,23 +166,33 @@ body {
     border: none;
     padding: 0;
     margin: 0;
-
     text-align: center;
-    font-size: 14px;
+    font-size: 13px;
+    line-height: 1.1;
+    background: transparent;
+}
+
+.form-value.list {
+    height: 100%;
+    padding-bottom: 1px;
 }
 
 .form-value.list input {
     width: 100%;
     border: none;
-    padding: 0;
+    padding: 0 1mm 1px 1mm;
     margin: 0;
-
     text-align: left;
-    font-size: 14px;
+    font-size: 11.5px;
+    line-height: 1.1;
 }
 
 input:disabled {
     background-color: white;
+}
+
+body, input, textarea, table, button {
+    font-family: "Times New Roman", Times, serif;
 }
 
 /*-------------------------------*/
@@ -304,16 +318,16 @@ table#practice-table {
 
 #practice-table tbody input {
     width: 100%;
-    height: 100%;
+    height: 5.8mm;
+    line-height: 5.8mm;
     border: none;
     outline: none;
     background: transparent;
     padding: 0 0.8mm;
     margin: 0;
     box-sizing: border-box;
-
     font-family: inherit;
-    font-size: 11px;
+    font-size: 10.5px;
 }
 
 #practice-table tbody .col-no input,
