@@ -96,53 +96,67 @@ async function downloadPdf() {
         scale: 3,
         useCORS: true,
         backgroundColor: '#ffffff',
-        // onclone працює з віртуальною копією сторінки перед створенням PDF:
+        // Фіксуємо ширину віртуального вікна рендеру, щоб мобільний екран/зум не псували розміри:
+        windowWidth: 1250,
+        windowHeight: 900,
         onclone: (clonedDoc) => {
+          // Примусово повертаємо контейнер А4 в еталонні розміри на час експорту
+          const clonedContainer = clonedDoc.querySelectorAll('.container-a4')[i];
+          if (clonedContainer) {
+            clonedContainer.style.width = '297mm';
+            clonedContainer.style.height = '210mm';
+            clonedContainer.style.display = 'flex';
+            clonedContainer.style.flexDirection = 'row';
+          }
+
           const inputs = clonedDoc.querySelectorAll('input');
           inputs.forEach((input) => {
             const val = input.value || '';
             const textDiv = clonedDoc.createElement('div');
             textDiv.textContent = val;
 
-            // Загальні стилі для копії
             textDiv.className = input.className;
             textDiv.style.width = '100%';
             textDiv.style.boxSizing = 'border-box';
             textDiv.style.fontFamily = '"Times New Roman", Times, serif';
             textDiv.style.color = '#000000';
             textDiv.style.whiteSpace = 'nowrap';
-            textDiv.style.overflow = 'hidden';
+            textDiv.style.overflow = 'hidden'; // Запобігає вильоту тексту за межі!
 
             if (input.closest('#practice-table')) {
-              // Для таблиці: центрування з безпечним запасом для хвостиків літер
+              // 1. ТАБЛИЦЯ ГРАФІКА (вирішує Скріншот 4)
               textDiv.style.height = '100%';
               textDiv.style.display = 'flex';
               textDiv.style.alignItems = 'center';
-              textDiv.style.fontSize = '10px';
-              textDiv.style.lineHeight = '1.2';
-              
-              // 1. ВИМИКАЄМО обрізання, щоб хвостики літер не зрізались
-              textDiv.style.overflow = 'visible'; 
-              
-              // 2. Трохи піднімаємо текст над нижньою рамкою комірки (1.5-2px)
-              textDiv.style.paddingBottom = '2px';
+              textDiv.style.fontSize = '9px'; // трохи компактніший шрифт для довгих назв
+              textDiv.style.lineHeight = '1';
+              textDiv.style.textOverflow = 'ellipsis'; // якщо назва наддовга — вона не налізе на сусідні колонки
 
               if (input.parentElement.classList.contains('col-task')) {
                 textDiv.style.justifyContent = 'flex-start';
-                textDiv.style.paddingLeft = '1.2mm';
+                textDiv.style.paddingLeft = '1mm';
                 textDiv.style.textAlign = 'left';
               } else {
                 textDiv.style.justifyContent = 'center';
                 textDiv.style.textAlign = 'center';
               }
+            } else if (input.closest('.list')) {
+              // 2. РЯДКИ ЗАПИСІВ ТА ВІДГУКІВ (вирішує Скріншоти 2 і 3)
+              textDiv.style.height = '100%';
+              textDiv.style.display = 'flex';
+              textDiv.style.alignItems = 'flex-end';
+              textDiv.style.fontSize = '11px';
+              textDiv.style.lineHeight = '1';
+              textDiv.style.textAlign = 'left';
+              textDiv.style.paddingBottom = '1px';
+              textDiv.style.paddingLeft = '1mm';
+              textDiv.style.textOverflow = 'clip';
             } else {
-              // Для рядків та форми: підйом базової лінії над лінією підкреслення
-              const isList = input.closest('.list');
-              textDiv.style.fontSize = isList ? '11.5px' : '13px';
+              // 3. ЗВИЧАЙНІ ПОЛЯ ФОРМИ
+              textDiv.style.fontSize = '12.5px';
               textDiv.style.lineHeight = '1.1';
-              textDiv.style.textAlign = isList ? 'left' : (input.style.textAlign || 'center');
+              textDiv.style.textAlign = input.style.textAlign || 'center';
               textDiv.style.paddingBottom = '1.5px';
-              if (isList) textDiv.style.paddingLeft = '0.5mm';
             }
 
             input.parentNode.replaceChild(textDiv, input);

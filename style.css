@@ -4,14 +4,16 @@
 }
 
 body {
-    background-color: white;
+    background-color: #e9ecef;
 }
 
 .page {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: auto;
+    height: auto;
+    padding: 15px 0;
     margin: 0;
 }
 
@@ -21,6 +23,9 @@ body {
     display: flex;
     border: 1px solid black;
     box-sizing: border-box;
+
+    background-color: white;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
 .container-a5 {
@@ -46,7 +51,7 @@ body {
 }
 
 .container-a5.rule {
-    padding: 12mm 12mm 0 20mm;
+    padding: 10mm 12mm 0 18mm;
 }
 
 .form-title { 
@@ -85,6 +90,7 @@ body {
 .form-group.list {
     margin-bottom: 0;
     height: 5.1mm;
+    overflow: hidden;
 }
 
 .form-hint {
@@ -174,7 +180,7 @@ body {
 
 .form-value.list {
     height: 100%;
-    padding-bottom: 1px;
+    overflow: hidden;
 }
 
 .form-value.list input {
@@ -223,13 +229,16 @@ li {
 }
 
 .par {
-    line-height: calc(1em + 1mm); 
+    font-size: 11px;
+    line-height: 1.25;
     text-align: justify;
     text-justify: inter-word;
+    margin-bottom: 1mm;
 }
 
-.indent {
-    margin-left: 7mm;
+.par.indent {
+    text-indent: 6mm;
+    margin-left: 0;
 }
 
 /*-------------------------------*/
@@ -307,13 +316,17 @@ table#practice-table {
     transform: translate(-50%, -50%) rotate(-90deg);
 }
 
-#practice-table col.col-no   { width: 5mm; }
+#practice-table col.col-no   { width: 5.5mm; }
 #practice-table col.col-task { width: auto; }
-#practice-table col.col-week { width: 4.5mm; }
-#practice-table col.col-note { width: 20mm; }
+#practice-table col.col-week { width: 4mm; }
+#practice-table col.col-note { width: 17mm; }
 
 #practice-table tbody tr {
-    height: 6.4mm;
+    height: 6.2mm;
+}
+
+#practice-table tbody td {
+    overflow: hidden;
 }
 
 #practice-table tbody input {
@@ -399,4 +412,146 @@ body.exporting ::placeholder {
 
 body.exporting input:focus {
     background-color: transparent;
+}
+
+/* ============================================================
+   Адаптація для малих екранів та масштабу (zoom > 100%)
+   ============================================================ */
+
+/* Якщо ширина вікна менша за розворот А4 (297mm ≈ 1150px) */
+@media screen and (max-width: 1150px) {
+
+    /* Застосовується тільки для перегляду (не впливає на формування PDF) */
+    body:not(.exporting) .page {
+        padding: 10px 0;
+        height: auto;
+    }
+
+    body:not(.exporting) .container-a4 {
+        /* Перетворюємо розворот А4 на вертикальний контейнер для двох А5 */
+        flex-direction: column;
+        width: 100%;
+        max-width: 148.5mm; /* точна ширина аркуша А5 */
+        height: auto;
+        border: none;
+        box-shadow: none;
+        background: transparent;
+        gap: 12mm; /* візуальний розрив між лівою і правою сторінкою А5 */
+    }
+
+    body:not(.exporting) .container-a5 {
+        width: 100%;
+        min-height: 210mm; /* стандартна висота аркуша А5 */
+        height: auto;
+        border: 1px solid black; /* кожен листок отримує власну рамку */
+        background-color: white;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Скидаємо спільну лінію між сторінками */
+    body:not(.exporting) .container-a5.left {
+        border-right: 1px solid black;
+    }
+}
+
+/* Додаткова оптимізація для дуже вузьких екранів (смартфони) */
+@media screen and (max-width: 600px) {
+    body:not(.exporting) .container-a4 {
+        max-width: 96vw;
+    }
+
+    body:not(.exporting) .container-a5.left,
+    body:not(.exporting) .container-a5.right,
+    body:not(.exporting) .container-a5.title,
+    body:not(.exporting) .container-a5.rule {
+        padding: 8mm 6mm 6mm 6mm; /* трохи компактніші поля для мобільних */
+    }
+
+    body:not(.exporting) table#practice-table {
+        font-size: 9.5px;
+    }
+}
+
+/* ============================================================
+   Блок інструкції на початку сторінки
+   ============================================================ */
+
+.instructions-banner {
+    max-width: 900px;
+    margin: 20px auto 10px auto;
+    background: #ffffff;
+    border: 1px solid #dcdcdc;
+    border-left: 5px solid #af745a;
+    border-radius: 6px;
+    padding: 16px 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    color: #333333;
+    line-height: 1.5;
+}
+
+.instructions-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 8px;
+}
+
+.instructions-icon {
+    font-size: 20px;
+}
+
+.instructions-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #2b2b2b;
+}
+
+.instructions-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.instruction-item {
+    font-size: 13.5px;
+    color: #4a4a4a;
+}
+
+.instruction-item strong {
+    color: #1a1a1a;
+}
+
+.instruction-item ul {
+    margin: 4px 0 2px 20px;
+    list-style-type: disc;
+}
+
+.instruction-item ul > li:before {
+    content: none;
+}
+
+.instruction-item li {
+    display: list-item;
+    font-size: 13px;
+    margin-bottom: 2px;
+}
+
+@media print {
+    .instructions-banner, .buttons {
+        display: none !important;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .instructions-banner {
+        margin: 15px;
+        padding: 12px 14px;
+    }
+    .instruction-item {
+        font-size: 12.5px;
+    }
 }
