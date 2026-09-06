@@ -89,6 +89,9 @@ async function downloadPdf() {
   document.body.classList.add('exporting');
 
   try {
+    // Чекаємо на завантаження шрифтів, щоб PDF відповідав тому, що на екрані
+    if (document.fonts && document.fonts.ready) await document.fonts.ready;
+
     const pdf = new jsPDFCtor('landscape', 'mm', 'a4');
 
     for (let i = 0; i < containers.length; i++) {
@@ -121,16 +124,16 @@ async function downloadPdf() {
             textDiv.style.fontFamily = '"Times New Roman", Times, serif';
             textDiv.style.color = '#000000';
             textDiv.style.whiteSpace = 'nowrap';
-            textDiv.style.overflow = 'hidden'; // Запобігає вильоту тексту за межі!
+            textDiv.style.overflow = 'hidden';          // Запобігає вильоту тексту за межі!
 
             if (input.closest('#practice-table')) {
-              // 1. ТАБЛИЦЯ ГРАФІКА (вирішує Скріншот 4)
+              // 1. ТАБЛИЦЯ ГРАФІКА
               textDiv.style.height = '100%';
               textDiv.style.display = 'flex';
               textDiv.style.alignItems = 'center';
-              textDiv.style.fontSize = '9px'; // трохи компактніший шрифт для довгих назв
+              textDiv.style.fontSize = '9px';           // трохи компактніший шрифт для довгих назв
               textDiv.style.lineHeight = '1';
-              textDiv.style.textOverflow = 'ellipsis'; // якщо назва наддовга — вона не налізе на сусідні колонки
+              textDiv.style.textOverflow = 'ellipsis';  // якщо назва наддовга — вона не налізе на сусідні колонки
 
               if (input.parentElement.classList.contains('col-task')) {
                 textDiv.style.justifyContent = 'flex-start';
@@ -141,7 +144,7 @@ async function downloadPdf() {
                 textDiv.style.textAlign = 'center';
               }
             } else if (input.closest('.list')) {
-              // 2. РЯДКИ ЗАПИСІВ ТА ВІДГУКІВ (вирішує Скріншоти 2 і 3)
+              // 2. РЯДКИ ЗАПИСІВ ТА ВІДГУКІВ
               textDiv.style.height = '100%';
               textDiv.style.display = 'flex';
               textDiv.style.alignItems = 'flex-end';

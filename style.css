@@ -79,12 +79,12 @@ body {
 .form-group {
     display: flex;
     margin-bottom: 3mm;
-    align-items: baseline;
+    align-items: flex-end;
 }
 
 .form-group-list {
     display: flex;
-    align-items: baseline;
+    align-items: flex-end;
 }
 
 .form-group.list {
@@ -138,6 +138,7 @@ body {
     position: relative;
     padding-bottom: 1.5px;
     box-sizing: border-box;
+    min-height: 5mm;
 }
 
 .form-value.type-1 {
