@@ -327,7 +327,7 @@ table#practice-table {
 }
 
 #practice-table tbody td {
-    overflow: hidden;
+    overflow: visible;
 }
 
 #practice-table tbody input {
@@ -555,4 +555,55 @@ body.exporting input:focus {
     .instruction-item {
         font-size: 12.5px;
     }
+}
+
+/* Підсвітка багаторядкового виділення між рядками */
+.form-value.list input {
+    position: relative;
+    z-index: 2;
+}
+
+.selection-highlight {
+    position: absolute;
+    top: 0;
+    bottom: 1.5px;
+    background-color: #b4d5fe;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* При експорті в PDF підсвітка завжди приховується */
+body.exporting .selection-highlight {
+    display: none !important;
+}
+
+/* ============================================================
+   Динамічне об'єднання рядків у Календарному графіку
+   ============================================================ */
+
+/* Приховування ліній між об'єднаними рядками одного завдання */
+#practice-table td.col-task.task-merged-top {
+    border-bottom: none !important;
+}
+
+#practice-table td.col-task.task-merged-middle {
+    border-top: none !important;
+    border-bottom: none !important;
+}
+
+#practice-table td.col-task.task-merged-bottom {
+    border-top: none !important;
+}
+
+/* Вертикальне центрування та блокування ручного вводу автонумерації */
+#practice-table td.col-no input {
+    cursor: default;
+    user-select: none;
+    font-weight: bold;
+}
+
+#practice-table td.col-no,
+#practice-table td.col-note,
+#practice-table td.col-week {
+    vertical-align: middle !important;
 }
